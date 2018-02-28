@@ -1,0 +1,20 @@
+plugins {
+  id 'java-gradle-plugin'
+}
+
+repositories {
+  jcenter()
+}
+
+dependencies {
+  compile 'org.idpf:epubcheck:4.0.2'
+}
+
+gradlePlugin {
+  plugins {
+    simplePlugin {
+      id = 'se.intem.epub-plugin'
+      implementationClass = 'se.intem.epub.EpubPlugin'
+    }
+  }
+}
