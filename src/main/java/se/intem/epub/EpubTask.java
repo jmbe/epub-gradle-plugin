@@ -5,7 +5,11 @@ import com.adobe.epubcheck.api.Report;
 import com.adobe.epubcheck.util.Archive;
 import com.adobe.epubcheck.util.DefaultReportImpl;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
@@ -75,8 +79,15 @@ public class EpubTask extends DefaultTask {
 
     }
 
-    File target = new File(outputDirectory, name);
-    epub.getEpubFile().renameTo(target);
-    log.lifecycle("Created {}", target);
+    try {
+      File target = new File(outputDirectory, name);
+      /* Copy to retain file descriptor for viewers that auto-refresh changes. */
+      Files.copy(epub.getEpubFile().toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+      epub.getEpubFile().delete();
+      log.lifecycle("Created {}", target);
+    } catch (IOException e) {
+      throw new GradleException("Failed to write output file", e);
+    }
+
   }
 }
