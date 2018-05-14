@@ -67,6 +67,6 @@ Configuration options can be passed to the plugin:
 
 | Option | Description | Default |
 | --- | --- | --- |
-| validate | Validate EPUB using EpubCheck | true |
+| validate | Validate EPUB using [EpubCheck](https://github.com/IDPF/epubcheck/) | true |
 | failOnWarnings | Fail build on validation warnings | true |
 | failOnErrors | Fail build on validation errors | true |
