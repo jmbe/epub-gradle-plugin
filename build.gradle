@@ -13,8 +13,8 @@ dependencies {
 
 gradlePlugin {
   plugins {
-    simplePlugin {
-      id = 'se.intem.epub-plugin'
+    epubPlugin {
+      id = 'se.intem.epub'
       implementationClass = 'se.intem.epub.EpubPlugin'
     }
   }
