@@ -25,7 +25,10 @@ public class EpubTask extends DefaultTask {
 
   private File sourceDirectory;
   private File outputDirectory = new File("target");
+
   private boolean validate = true;
+  private boolean failOnWarnings = true;
+  private boolean failOnErrors = true;
 
   private String epubName;
 
@@ -72,13 +75,23 @@ public class EpubTask extends DefaultTask {
           log.info("Validation OK");
           break;
         case 1:
-          log.warn("Validation detected warnings");
-          break;
-        default:
-          log.warn("Validation detected errors");
-          break;
-      }
+          String warningMessage = "Validation detected warnings";
+          if (failOnWarnings) {
+            throw new GradleException(warningMessage);
+          } else {
+            log.warn(warningMessage);
+            break;
+          }
 
+        default:
+          String errorMessage = "Validation detected errors";
+          if (failOnErrors) {
+            throw new GradleException(errorMessage);
+          } else {
+            log.warn(errorMessage);
+            break;
+          }
+      }
     }
 
     try {
@@ -97,6 +110,24 @@ public class EpubTask extends DefaultTask {
       throw new GradleException("Failed to write output file", e);
     }
 
+  }
+
+  @Input
+  public boolean isFailOnWarnings() {
+    return failOnWarnings;
+  }
+
+  public void setFailOnWarnings(boolean failOnWarnings) {
+    this.failOnWarnings = failOnWarnings;
+  }
+
+  @Input
+  public boolean isFailOnErrors() {
+    return failOnErrors;
+  }
+
+  public void setFailOnErrors(boolean failOnErrors) {
+    this.failOnErrors = failOnErrors;
   }
 
   @Input
