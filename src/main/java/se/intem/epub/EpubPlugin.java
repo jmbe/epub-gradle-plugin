@@ -22,6 +22,8 @@ public class EpubPlugin implements Plugin<Project> {
 
       /* Output to root project, since writing to subdirectories would trigger build again */
       task.setOutputDirectory(project.getRootProject().getBuildDir());
+
+      task.setEpubName(project.getName());
     });
 
   }

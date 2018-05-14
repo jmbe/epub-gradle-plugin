@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Optional;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.logging.Logger;
@@ -25,6 +26,8 @@ public class EpubTask extends DefaultTask {
   private File sourceDirectory;
   private File outputDirectory = new File("target");
   private boolean validate = true;
+
+  private String epubName;
 
   @InputDirectory
   public File getSourceDirectory() {
@@ -54,12 +57,11 @@ public class EpubTask extends DefaultTask {
   }
 
   @TaskAction
-  void generate() {
+  public void generate() {
     log.lifecycle("Assembling epub for {}...", sourceDirectory);
 
     Archive epub = new Archive(sourceDirectory.getAbsolutePath(), false);
     epub.createArchive();
-    String name = epub.getEpubName();
 
     if (validate) {
       Report report = new DefaultReportImpl(epub.getEpubName());
@@ -80,7 +82,13 @@ public class EpubTask extends DefaultTask {
     }
 
     try {
-      File target = new File(outputDirectory, name);
+      String filename = Optional.ofNullable(epubName).orElse(epub.getEpubName());
+
+      if (!filename.endsWith(".epub")) {
+        filename = filename + ".epub";
+      }
+
+      File target = new File(outputDirectory, filename);
       /* Copy to retain file descriptor for viewers that auto-refresh changes. */
       Files.copy(epub.getEpubFile().toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
       epub.getEpubFile().delete();
@@ -89,5 +97,14 @@ public class EpubTask extends DefaultTask {
       throw new GradleException("Failed to write output file", e);
     }
 
+  }
+
+  @Input
+  public String getEpubName() {
+    return epubName;
+  }
+
+  public void setEpubName(String epubName) {
+    this.epubName = epubName;
   }
 }
