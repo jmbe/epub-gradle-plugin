@@ -20,7 +20,7 @@ It is assumed that books are held in sub-directories of the root project.
     ├── build.gradle
     └── settings.gradle
 
-Create build.gradle with the following contents:
+Create `build.gradle` with the following contents:
 
     buildscript {
         repositories {
@@ -37,19 +37,19 @@ Create build.gradle with the following contents:
         apply plugin: "se.intem.epub"
     }
 
-Add names of books to settings.gradle:
+Add names of books to `settings.gradle`:
 
     include "book1"
     include "book2"
     ...
 
 
-## Running
+## Using
 
 | | Command |
 | --- | --- |
-| Build once | **gradle epub** | 
-| Watch mode | **gradle epub --continuous** |
+| Build once | `gradle epub` | 
+| Watch mode | `gradle epub --continuous` |
 
 ## Configuration
 
