@@ -32,6 +32,10 @@ Create `build.gradle` with the following contents:
             classpath "com.github.jmbe:epub-gradle-plugin:0.4"
         }
     }
+
+    plugins {
+        id "base"
+    }
     
     subprojects {
         apply plugin: "se.intem.epub"
@@ -50,6 +54,7 @@ Add names of books to `settings.gradle`:
 | --- | --- |
 | Build once | `gradle epub` | 
 | Watch mode | `gradle epub --continuous` |
+| Rebuild | `gradle clean epub` |
 
 ## Configuration
 
