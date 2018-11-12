@@ -83,7 +83,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
       <xsl:if test="xhtm:body//xhtm:nav[@epub:type='page-list']">
         <xsl:element name="pageList">
+          <!--
           <xsl:call-template name="addID" />
+          -->
           <xsl:apply-templates select="xhtm:body//xhtm:nav[@epub:type='page-list']/xhtm:ol" mode="page-list" />
         </xsl:element>
       </xsl:if>
