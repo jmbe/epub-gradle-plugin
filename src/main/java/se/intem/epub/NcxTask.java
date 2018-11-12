@@ -86,10 +86,20 @@ public class NcxTask extends DefaultTask {
   private File findNcxFile() {
 
     if (this.ncxFile != null) {
+      log.lifecycle("Using configured ncx file: {}", this.ncxFile);
       return this.ncxFile;
     }
 
-    return getProject().file(DEFAULT_EPUB_TOC_NCX);
+    Optional<File> fromOpf = findNcxFileFromPackageDocument();
+
+    if (fromOpf.isPresent()) {
+      log.lifecycle("Using ncx file from package file: {}", fromOpf.get());
+      return fromOpf.get();
+    }
+
+    File ncx = getProject().file(DEFAULT_EPUB_TOC_NCX);
+    log.lifecycle("Using default ncx file: {}", ncx);
+    return ncx;
   }
 
   private File findNavFile() {
@@ -112,12 +122,22 @@ public class NcxTask extends DefaultTask {
   }
 
   private Optional<File> findNavFileFromPackageDocument() {
+    String expr = "/opf:package/opf:manifest/opf:item[@properties='nav']/@href";
+    return findPathInPackageDocument(expr);
+  }
+
+  private Optional<File> findNcxFileFromPackageDocument() {
+    String expr = "/opf:package/opf:manifest/opf:item[@media-type='application/x-dtbncx+xml']/@href";
+    return findPathInPackageDocument(expr);
+  }
+
+  private Optional<File> findPathInPackageDocument(String xpathExpression) {
     Optional<String> packageDocumentPath = findPackageDocumentPath();
 
     if (packageDocumentPath.isPresent()) {
-      String expr = "/opf:package/opf:manifest/opf:item[@properties='nav']/@href";
+
       String packageDocument = packageDocumentPath.get();
-      Optional<String> href = evaluateXpathForFile(packageDocument, expr);
+      Optional<String> href = evaluateXpathForFile(packageDocument, xpathExpression);
 
       if (href.isPresent()) {
         File packageDocumentDirectory = getProject().file(packageDocument).getParentFile();
@@ -128,7 +148,6 @@ public class NcxTask extends DefaultTask {
     }
 
     return Optional.empty();
-
   }
 
   private Optional<String> findPackageDocumentPath() {
@@ -181,7 +200,6 @@ public class NcxTask extends DefaultTask {
     return navFile;
   }
 
-
   public void setNavFile(File navFile) {
     this.navFile = navFile;
   }
@@ -191,7 +209,6 @@ public class NcxTask extends DefaultTask {
   public File getNcxFile() {
     return ncxFile;
   }
-
 
   public void setNcxFile(File ncxFile) {
     this.ncxFile = ncxFile;
