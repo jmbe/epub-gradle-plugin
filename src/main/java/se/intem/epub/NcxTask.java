@@ -11,6 +11,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.logging.Logger;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.TaskAction;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,10 @@ public class NcxTask extends DefaultTask {
   private static final Logger log = (Logger) LoggerFactory.getLogger(NcxTask.class);
 
   private File sourceDirectory;
+
+  private String navFile = "EPUB/nav.xhtml";
+
+  private String ncxFile = "EPUB/toc.ncx";
 
   @InputDirectory
   public File getSourceDirectory() {
@@ -36,8 +41,7 @@ public class NcxTask extends DefaultTask {
     log.lifecycle("Generating ncx...");
     File nav = findNavFile();
 
-    String ncxName = "EPUB/toc.ncx";
-    File ncx = new File(sourceDirectory, ncxName);
+    File ncx = new File(sourceDirectory, this.ncxFile);
 
     log.debug("Generating ncx from source nav {} to {}", nav, ncx);
 
@@ -49,7 +53,7 @@ public class NcxTask extends DefaultTask {
       StreamResult result = new StreamResult(ncx);
       transformer.transform(source, result);
 
-      log.lifecycle("Created " + ncxName);
+      log.lifecycle("Created " + this.ncxFile);
 
     } catch (TransformerException e) {
       throw new GradleException("Failed to create ncx", e);
@@ -57,11 +61,10 @@ public class NcxTask extends DefaultTask {
   }
 
   private File findNavFile() {
-    String navName = "EPUB/nav.xhtml";
-    File nav = new File(sourceDirectory, navName);
+    File nav = new File(sourceDirectory, this.navFile);
 
     if (!nav.exists()) {
-      throw new GradleException("Could not find nav file " + navName);
+      throw new GradleException("Could not find nav file " + this.navFile);
     }
     return nav;
   }
@@ -73,5 +76,23 @@ public class NcxTask extends DefaultTask {
     Transformer transformer = transformerFactory.newTransformer(xslSource);
     transformer.setParameter("cwd", sourceDirectory.getAbsolutePath() + "/");
     return transformer;
+  }
+
+  public String getNavFile() {
+    return navFile;
+  }
+
+  @Input
+  public void setNavFile(String navFile) {
+    this.navFile = navFile;
+  }
+
+  public String getNcxFile() {
+    return ncxFile;
+  }
+
+  @Input
+  public void setNcxFile(String ncxFile) {
+    this.ncxFile = ncxFile;
   }
 }
