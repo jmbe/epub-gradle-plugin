@@ -22,8 +22,9 @@ import javax.xml.xpath.XPathFactory;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.logging.Logger;
-import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
+import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -34,12 +35,13 @@ public class NcxTask extends DefaultTask {
   /** Logger for this class */
   private static final Logger log = (Logger) LoggerFactory.getLogger(NcxTask.class);
   private static final String DEFAULT_EPUB_NAV_XHTML = "EPUB/nav.xhtml";
+  public static final String DEFAULT_EPUB_TOC_NCX = "EPUB/toc.ncx";
 
   private File sourceDirectory;
 
-  private String navFile;
+  private File navFile;
 
-  private String ncxFile = "EPUB/toc.ncx";
+  private File ncxFile;
 
   private static XPathFactory xPathFactory = XPathFactory.newInstance();
   private static DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -62,7 +64,7 @@ public class NcxTask extends DefaultTask {
       throw new GradleException("Could not find nav file " + nav);
     }
 
-    File ncx = new File(sourceDirectory, this.ncxFile);
+    File ncx = findNcxFile();
 
     log.debug("Generating ncx from source nav {} to {}", nav, ncx);
 
@@ -74,19 +76,27 @@ public class NcxTask extends DefaultTask {
       StreamResult result = new StreamResult(ncx);
       transformer.transform(source, result);
 
-      log.lifecycle("Created " + this.ncxFile);
+      log.lifecycle("Created " + ncx);
 
     } catch (TransformerException e) {
       throw new GradleException("Failed to create ncx", e);
     }
   }
 
+  private File findNcxFile() {
+
+    if (this.ncxFile != null) {
+      return this.ncxFile;
+    }
+
+    return getProject().file(DEFAULT_EPUB_TOC_NCX);
+  }
+
   private File findNavFile() {
 
-    if (!Strings.isNullOrEmpty(this.navFile)) {
-      File nav = new File(sourceDirectory, this.navFile);
-      log.lifecycle("Using configured nav document: {}", nav);
-      return nav;
+    if (this.navFile != null) {
+      log.lifecycle("Using configured nav document: {}", this.navFile);
+      return this.navFile;
     }
 
     Optional<File> fromOpf = findNavFileFromPackageDocument();
@@ -96,7 +106,7 @@ public class NcxTask extends DefaultTask {
       return fromOpf.get();
     }
 
-    File nav = new File(sourceDirectory, DEFAULT_EPUB_NAV_XHTML);
+    File nav = getProject().file(DEFAULT_EPUB_NAV_XHTML);
     log.lifecycle("Using default nav document: {}", nav);
     return nav;
   }
@@ -110,7 +120,7 @@ public class NcxTask extends DefaultTask {
       Optional<String> href = evaluateXpathForFile(packageDocument, expr);
 
       if (href.isPresent()) {
-        File packageDocumentDirectory = new File(sourceDirectory, packageDocument).getParentFile();
+        File packageDocumentDirectory = getProject().file(packageDocument).getParentFile();
         File navFile = new File(packageDocumentDirectory, href.get());
         return Optional.of(navFile);
       }
@@ -131,7 +141,7 @@ public class NcxTask extends DefaultTask {
   private Optional<String> evaluateXpathForFile(String filename, String expr) {
     try {
 
-      File containerXml = new File(sourceDirectory, filename);
+      File containerXml = getProject().file(filename);
 
       if (!containerXml.exists()) {
         log.warn("Could not find file {}", filename);
@@ -165,21 +175,25 @@ public class NcxTask extends DefaultTask {
     return transformer;
   }
 
-  public String getNavFile() {
+  @org.gradle.api.tasks.Optional
+  @InputFile
+  public File getNavFile() {
     return navFile;
   }
 
-  @Input
-  public void setNavFile(String navFile) {
+
+  public void setNavFile(File navFile) {
     this.navFile = navFile;
   }
 
-  public String getNcxFile() {
+  @org.gradle.api.tasks.Optional
+  @OutputFile
+  public File getNcxFile() {
     return ncxFile;
   }
 
-  @Input
-  public void setNcxFile(String ncxFile) {
+
+  public void setNcxFile(File ncxFile) {
     this.ncxFile = ncxFile;
   }
 }
