@@ -26,5 +26,10 @@ public class EpubPlugin implements Plugin<Project> {
       task.setEpubName(project.getName());
     });
 
+    project.getTasks().create("ncx", NcxTask.class, (NcxTask task) -> {
+      log.debug("Configuring ncx task for {}", project.getProjectDir());
+      task.setSourceDirectory(project.getProjectDir());
+    });
+
   }
 }

@@ -29,8 +29,12 @@ Create `build.gradle` with the following contents:
         }
     
         dependencies {
-            classpath "com.github.jmbe:epub-gradle-plugin:0.4"
+            classpath "com.github.jmbe:epub-gradle-plugin:0.5"
         }
+    }
+
+    plugins {
+        id "base"
     }
     
     subprojects {
@@ -50,6 +54,8 @@ Add names of books to `settings.gradle`:
 | --- | --- |
 | Build once | `gradle epub` | 
 | Watch mode | `gradle epub --continuous` |
+| Create ncx file | `gradle ncx` |
+| Rebuild | `gradle clean epub` |
 
 ## Configuration
 
@@ -57,6 +63,10 @@ Configuration options can be passed to the plugin:
 
     subprojects {
         apply plugin: "se.intem.epub"
+        
+        ncx {
+            ncxFile = file("EPUB/toc.ncx")
+        }
     
         epub {
             validate true
@@ -65,8 +75,19 @@ Configuration options can be passed to the plugin:
         }
     }
 
+### Epub task
+
 | Option | Description | Default |
 | --- | --- | --- |
-| validate | Validate EPUB using EpubCheck | true |
+| validate | Validate EPUB using [EpubCheck](https://github.com/IDPF/epubcheck/) | true |
 | failOnWarnings | Fail build on validation warnings | true |
 | failOnErrors | Fail build on validation errors | true |
+
+### Ncx task
+
+| Option | Description | Default |
+| --- | --- | --- |
+| ncxFile | Ncx output file | EPUB/toc.ncx |
+| navFile | Navigation document input file | EPUB/nav.xhtml |
+
+These files will be determined from package document if *not* provided as parameter (recommended).
