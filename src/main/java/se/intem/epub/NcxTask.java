@@ -34,12 +34,7 @@ public class NcxTask extends DefaultTask {
   @TaskAction
   public void generate() {
     log.lifecycle("Generating ncx...");
-    String navName = "EPUB/nav.xhtml";
-    File nav = new File(sourceDirectory, navName);
-
-    if (!nav.exists()) {
-      throw new GradleException("Could not find nav file " + navName);
-    }
+    File nav = findNavFile();
 
     String ncxName = "EPUB/toc.ncx";
     File ncx = new File(sourceDirectory, ncxName);
@@ -59,6 +54,16 @@ public class NcxTask extends DefaultTask {
     } catch (TransformerException e) {
       throw new GradleException("Failed to create ncx", e);
     }
+  }
+
+  private File findNavFile() {
+    String navName = "EPUB/nav.xhtml";
+    File nav = new File(sourceDirectory, navName);
+
+    if (!nav.exists()) {
+      throw new GradleException("Could not find nav file " + navName);
+    }
+    return nav;
   }
 
   private Transformer createXslTransformer() throws TransformerConfigurationException {
