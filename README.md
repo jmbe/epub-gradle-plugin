@@ -90,4 +90,4 @@ Configuration options can be passed to the plugin:
 | ncxFile | Ncx output file | EPUB/toc.ncx |
 | navFile | Navigation document input file | EPUB/nav.xhtml |
 
-Nav file will be determined from package document if not provided as parameter (recommended).
+These files will be determined from package document if *not* provided as parameter (recommended).
