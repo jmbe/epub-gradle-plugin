@@ -190,7 +190,10 @@ public class NcxTask extends DefaultTask {
     TransformerFactory transformerFactory = TransformerFactory.newInstance();
     StreamSource xslSource = new StreamSource(xsl);
     Transformer transformer = transformerFactory.newTransformer(xslSource);
-    transformer.setParameter("cwd", sourceDirectory.getAbsolutePath() + "/");
+
+    String cwd = sourceDirectory.getAbsolutePath() + File.separator;
+    // log.lifecycle("Using cwd {}", cwd);
+    transformer.setParameter("cwd", cwd);
     return transformer;
   }
 
