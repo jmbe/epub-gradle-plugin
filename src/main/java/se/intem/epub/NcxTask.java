@@ -151,7 +151,7 @@ public class NcxTask extends DefaultTask {
   }
 
   private Optional<String> findPackageDocumentPath() {
-    String filename = "META-INF/container.xml";
+    String filename = "META-INF/container.xml".replace("/", File.separator);
     String expr = "/c:container/c:rootfiles/c:rootfile[1]/@full-path";
 
     return evaluateXpathForFile(filename, expr);
