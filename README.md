@@ -29,7 +29,7 @@ Create `build.gradle` with the following contents:
         }
     
         dependencies {
-            classpath "com.github.jmbe:epub-gradle-plugin:0.6"
+            classpath "com.github.jmbe:epub-gradle-plugin:0.7"
         }
     }
 
