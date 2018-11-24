@@ -78,7 +78,7 @@ public class NcxTask extends DefaultTask {
 
       log.lifecycle("Created " + ncx);
 
-    } catch (TransformerException e) {
+    } catch (TransformerException | IOException e) {
       throw new GradleException("Failed to create ncx", e);
     }
   }
@@ -150,6 +150,11 @@ public class NcxTask extends DefaultTask {
     return Optional.empty();
   }
 
+  private String toXslCompatiblePath(String path) {
+    /* Always use forward slashes, even for Windows paths */
+    return path.replace("\\", "/");
+  }
+
   private Optional<String> findPackageDocumentPath() {
     String filename = "META-INF/container.xml".replace("/", File.separator);
     String expr = "/c:container/c:rootfiles/c:rootfile[1]/@full-path";
@@ -185,13 +190,13 @@ public class NcxTask extends DefaultTask {
     return Optional.empty();
   }
 
-  private Transformer createXslTransformer() throws TransformerConfigurationException {
+  private Transformer createXslTransformer() throws TransformerConfigurationException, IOException {
     InputStream xsl = NcxTask.class.getResourceAsStream("/navdoc2ncx.xsl");
     TransformerFactory transformerFactory = TransformerFactory.newInstance();
     StreamSource xslSource = new StreamSource(xsl);
     Transformer transformer = transformerFactory.newTransformer(xslSource);
 
-    String cwd = sourceDirectory.getAbsolutePath() + File.separator;
+    String cwd = toXslCompatiblePath(sourceDirectory.getCanonicalPath() + "/");
     // log.lifecycle("Using cwd {}", cwd);
     transformer.setParameter("cwd", cwd);
     return transformer;
