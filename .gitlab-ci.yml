@@ -9,6 +9,8 @@ before_script:
 
 build:
   stage: build
+  tags:
+    - kubernetes-executor
   script: gradle --build-cache assemble
   cache:
     key: "$CI_COMMIT_REF_NAME"
@@ -19,6 +21,8 @@ build:
 
 test:
   stage: test
+  tags:
+    - kubernetes-executor
   script: gradle check
   cache:
     key: "$CI_COMMIT_REF_NAME"
@@ -29,5 +33,7 @@ test:
 
 .deploy:
   stage: deploy
+  tags:
+    - kubernetes-executor
   script: echo "Define your deployment script!"
   environment: production
