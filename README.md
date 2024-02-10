@@ -6,7 +6,7 @@ Assembles and validates EPUB books.
 
 ### Directory structure
 
-It is assumed that books are held in sub-directories of the root project.
+It is assumed that books are held in subdirectories of the root project.
 
     ├── book1
     │   ├── EPUB
@@ -27,7 +27,7 @@ Create `build.gradle` with the following contents:
             mavenLocal()
             maven { url "https://jitpack.io" }
         }
-    
+
         dependencies {
             classpath "com.github.jmbe:epub-gradle-plugin:0.9"
         }
@@ -36,7 +36,7 @@ Create `build.gradle` with the following contents:
     plugins {
         id "base"
     }
-    
+
     subprojects {
         apply plugin: "se.intem.epub"
     }
@@ -47,15 +47,14 @@ Add names of books to `settings.gradle`:
     include "book2"
     ...
 
-
 ## Using
 
-| | Command |
-| --- | --- |
-| Build once | `gradle epub` | 
-| Watch mode | `gradle epub --continuous` |
-| Create ncx file | `gradle ncx` |
-| Rebuild | `gradle clean epub` |
+|                 | Command                    |
+|-----------------|----------------------------|
+| Build once      | `gradle epub`              |
+| Watch mode      | `gradle epub --continuous` |
+| Create ncx file | `gradle ncx`               |
+| Rebuild         | `gradle clean epub`        |
 
 ## Configuration
 
@@ -63,11 +62,11 @@ Configuration options can be passed to the plugin:
 
     subprojects {
         apply plugin: "se.intem.epub"
-        
+
         ncx {
             ncxFile = file("EPUB/toc.ncx")
         }
-    
+
         epub {
             validate true
             failOnWarnings true
@@ -77,17 +76,17 @@ Configuration options can be passed to the plugin:
 
 ### Epub task
 
-| Option | Description | Default |
-| --- | --- | --- |
-| validate | Validate EPUB using [EpubCheck](https://github.com/IDPF/epubcheck/) | true |
-| failOnWarnings | Fail build on validation warnings | true |
-| failOnErrors | Fail build on validation errors | true |
+| Option         | Description                                                         | Default |
+|----------------|---------------------------------------------------------------------|---------|
+| validate       | Validate EPUB using [EpubCheck](https://github.com/IDPF/epubcheck/) | true    |
+| failOnWarnings | Fail build on validation warnings                                   | true    |
+| failOnErrors   | Fail build on validation errors                                     | true    |
 
 ### Ncx task
 
-| Option | Description | Default |
-| --- | --- | --- |
-| ncxFile | Ncx output file | EPUB/toc.ncx |
+| Option  | Description                    | Default        |
+|---------|--------------------------------|----------------|
+| ncxFile | Ncx output file                | EPUB/toc.ncx   |
 | navFile | Navigation document input file | EPUB/nav.xhtml |
 
 These files will be determined from package document if *not* provided as parameter (recommended).
